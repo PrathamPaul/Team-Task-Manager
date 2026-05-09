@@ -1,17 +1,6 @@
-import axios from 'axios';
+import { createApiClient } from './apiClient';
 
-const API = axios.create({
-  baseURL: 'http://localhost:9000/api/tasks',
-});
-
-// Add token automatically to every request if exists
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+const API = createApiClient('tasks');
 
 export const createTask = (data) => API.post('/create', data);
 export const getProjectTasks = (projectId) => API.get(`/${projectId}`);
