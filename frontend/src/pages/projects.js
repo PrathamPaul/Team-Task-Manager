@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getUserTeams } from '../api/teams';
 import { createProject, getTeamProjects, updateProject, deleteProject } from '../api/projects';
@@ -28,17 +28,7 @@ const Projects = () => {
 
   const isAdmin = user?.role === 'Admin' || user?.role === 'ProjectManager';
 
-  useEffect(() => {
-    fetchTeams();
-  }, []);
-
-  useEffect(() => {
-    if (selectedTeam) {
-      fetchProjects();
-    }
-  }, [selectedTeam]);
-
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       const response = await getUserTeams();
       setTeams(response.data.teams);
@@ -48,9 +38,9 @@ const Projects = () => {
     } catch (err) {
       setError('Failed to fetch teams');
     }
-  };
+  }, []);
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     if (!selectedTeam) return;
     
     try {
@@ -62,7 +52,17 @@ const Projects = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedTeam]);
+
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
+
+  useEffect(() => {
+    if (selectedTeam) {
+      fetchProjects();
+    }
+  }, [selectedTeam, fetchProjects]);
 
   const handleCreateProject = async (e) => {
     e.preventDefault();

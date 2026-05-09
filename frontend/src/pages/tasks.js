@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getUserTeams } from '../api/teams';
 import { getTeamProjects } from '../api/projects';
@@ -37,26 +37,7 @@ const Tasks = () => {
   const isAdmin = user?.role === 'Admin' || user?.role === 'ProjectManager';
   const statusOptions = ['Todo', 'In Progress', 'QA Complete', 'Completed'];
 
-  useEffect(() => {
-    fetchTeams();
-  }, []);
-
-  useEffect(() => {
-    if (selectedTeam) {
-      fetchProjects();
-      // Get team members for assignment
-      const team = teams.find(t => t._id === selectedTeam);
-      setTeamMembers(team?.members || []);
-    }
-  }, [selectedTeam, teams]);
-
-  useEffect(() => {
-    if (selectedProject) {
-      fetchTasks();
-    }
-  }, [selectedProject]);
-
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       const response = await getUserTeams();
       setTeams(response.data.teams);
@@ -66,9 +47,9 @@ const Tasks = () => {
     } catch (err) {
       setError('Failed to fetch teams');
     }
-  };
+  }, []);
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     if (!selectedTeam) return;
     
     try {
@@ -80,9 +61,9 @@ const Tasks = () => {
     } catch (err) {
       setError('Failed to fetch projects');
     }
-  };
+  }, [selectedTeam]);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     if (!selectedProject) return;
     
     try {
@@ -94,7 +75,26 @@ const Tasks = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedProject]);
+
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
+
+  useEffect(() => {
+    if (selectedTeam) {
+      fetchProjects();
+      // Get team members for assignment
+      const team = teams.find(t => t._id === selectedTeam);
+      setTeamMembers(team?.members || []);
+    }
+  }, [selectedTeam, teams, fetchProjects]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      fetchTasks();
+    }
+  }, [selectedProject, fetchTasks]);
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
@@ -187,11 +187,6 @@ const Tasks = () => {
 
   const canEditTask = (task) => {
     return task.createdBy._id === user.id || isAdmin;
-  };
-
-  const canChangeStatus = (task) => {
-    // Any team member can change status (since they can view the task, they're already a team member)
-    return true;
   };
 
   const handleAssignedToChange = (userId, isChecked, isEdit = false) => {
