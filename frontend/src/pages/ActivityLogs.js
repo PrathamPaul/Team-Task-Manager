@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { getAllLogs } from '../api/activityLogs';
 import Navbar from '../components/Navbar';
@@ -10,21 +10,21 @@ const ActivityLogs = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
-
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getAllLogs();
       setLogs(response.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch activity logs');
+      setError(err.userMessage || 'Failed to fetch activity logs');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
 
   const getActionIcon = (action) => {
     if (action.includes('Create')) return '➕';
@@ -102,6 +102,5 @@ const ActivityLogs = () => {
 };
 
 export default ActivityLogs;
-
 
 

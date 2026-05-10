@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { signupUser } from '../api/auth';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
@@ -23,7 +23,7 @@ const Signup = () => {
       await login(res.data.token);
       navigate('/activity-logs');
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed');
+      setError(err.userMessage || 'Signup failed');
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ const Signup = () => {
         </button>
       </form>
       <p className="text-center mt-3">
-        Already have an account? <a href="/login">Login</a>
+        Already have an account? <Link to="/login">Login</Link>
       </p>
     </div>
   );

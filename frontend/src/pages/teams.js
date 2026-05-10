@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { createTeam, joinTeam, getUserTeams } from '../api/teams';
 import Navbar from '../components/Navbar';
@@ -26,21 +26,21 @@ const Teams = () => {
       ? 'Managed Teams'
       : 'My Teams';
 
-  useEffect(() => {
-    fetchTeams();
-  }, []);
-
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getUserTeams();
       setTeams(response.data.teams);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch teams');
+      setError(err.userMessage || 'Failed to fetch teams');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
 
   const handleCreateTeam = async (e) => {
     e.preventDefault();
@@ -54,7 +54,7 @@ const Teams = () => {
       setTeamName('');
       fetchTeams(); // Refresh teams list
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create team');
+      setError(err.userMessage || 'Failed to create team');
     } finally {
       setCreateLoading(false);
     }
@@ -72,7 +72,7 @@ const Teams = () => {
       setTeamId('');
       fetchTeams(); // Refresh teams list
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to join team');
+      setError(err.userMessage || 'Failed to join team');
     } finally {
       setJoinLoading(false);
     }

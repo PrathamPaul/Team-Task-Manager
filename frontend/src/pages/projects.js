@@ -48,7 +48,7 @@ const Projects = () => {
       const response = await getTeamProjects(selectedTeam);
       setProjects(response.data.projects);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch projects');
+      setError(err.userMessage || 'Failed to fetch projects');
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ const Projects = () => {
       setShowCreateForm(false);
       fetchProjects();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create project');
+      setError(err.userMessage || 'Failed to create project');
     } finally {
       setCreateLoading(false);
     }
@@ -103,7 +103,7 @@ const Projects = () => {
       setEditingProject(null);
       fetchProjects();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update project');
+      setError(err.userMessage || 'Failed to update project');
     } finally {
       setUpdateLoading(false);
     }
@@ -118,7 +118,7 @@ const Projects = () => {
       setSuccess('Project deleted successfully!');
       fetchProjects();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete project');
+      setError(err.userMessage || 'Failed to delete project');
     }
   };
 

@@ -71,7 +71,7 @@ const Tasks = () => {
       const response = await getProjectTasks(selectedProject);
       setTasks(response.data.tasks);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch tasks');
+      setError(err.userMessage || 'Failed to fetch tasks');
     } finally {
       setLoading(false);
     }
@@ -116,7 +116,7 @@ const Tasks = () => {
       setShowCreateForm(false);
       fetchTasks();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create task');
+      setError(err.userMessage || 'Failed to create task');
     } finally {
       setCreateLoading(false);
     }
@@ -139,7 +139,7 @@ const Tasks = () => {
       setEditingTask(null);
       fetchTasks();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update task');
+      setError(err.userMessage || 'Failed to update task');
     } finally {
       setUpdateLoading(false);
     }
@@ -154,7 +154,7 @@ const Tasks = () => {
       setSuccess('Task deleted successfully!');
       fetchTasks();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete task');
+      setError(err.userMessage || 'Failed to delete task');
     }
   };
 
@@ -165,7 +165,7 @@ const Tasks = () => {
       setSuccess('Task status updated!');
       fetchTasks();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update status');
+      setError(err.userMessage || 'Failed to update status');
     }
   };
 

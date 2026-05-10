@@ -7,7 +7,7 @@ import authRoutes from './routes/authroute.js';
 import teamRoutes from './routes/teamroutes.js';
 import projectRoutes from './routes/projectroutes.js';
 import taskRoutes from './routes/taskroute.js';
-import activityLogRoutes from './routes/activityLogRoutes.js'; // <-- add this
+import activityLogRoutes from './routes/activityLogRoutes.js';
 
 dotenv.config();
 
@@ -20,15 +20,18 @@ app.use(cors({
 
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI, {})
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => console.error(err));
+
+app.get("/", (req, res) => {
+  res.send("Backend Running");
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
-app.use('/api/activity', activityLogRoutes); // <-- add this
+app.use('/api/activity', activityLogRoutes);
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+export default app;
