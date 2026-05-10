@@ -95,10 +95,5 @@ app.use((err, req, res, next) => {
   return res.status(500).json({ message: 'Server error' });
 });
 
-if (process.env.VERCEL !== '1') {
-  app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-  });
-}
 
 export default app;
